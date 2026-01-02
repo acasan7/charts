@@ -2,42 +2,47 @@ name: Auto-update Investment Chart
 
 on:
   schedule:
-    - cron: '0 0 3 * *'
-  workflow_dispatch:
+    - cron: '0 0 3 * *'  # Se ejecuta el día 3 de cada mes a medianoche
+  workflow_dispatch:      # Permite ejecutarlo manualmente
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Clonar el repo y mantener credenciales para push
+    # 1️⃣ Clonar el repo y mantener credenciales para push
     - uses: actions/checkout@v3
       with:
         persist-credentials: true
 
+    # 2️⃣ Configurar Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
 
+    # 3️⃣ Instalar dependencias
     - name: Install dependencies
       run: |
         pip install gspread pandas plotly oauth2client numpy
 
+    # 4️⃣ Configurar Service Account
     - name: Setup Google Service Account
       env:
         GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
       run: echo "Service Account listo"
 
+    # 5️⃣ Ejecutar el script de Python
     - name: Generate chart
       env:
         GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
       run: python generate_chart.py
 
+    # 6️⃣ Commit & Push HTML
     - name: Commit & Push HTML
-  run: |
-    git config --global user.name "github-actions"
-    git config --global user.email "actions@github.com"
-    git add investment_chart.html investment_chart_small.html
-    git commit -m "Auto-update charts" || echo "No changes to commit"
-    git push
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "actions@github.com"
+        git add investment_chart.html investment_chart_small.html
+        git commit -m "Auto-update charts" || echo "No changes to commit"
+        git push
