@@ -46,20 +46,57 @@ summary = df.groupby('Category', as_index=False)['Amount'].sum()
 summary['Percentage'] = summary['Amount'] / total * 100
 
 # ------------------------------
-# 4️⃣ Generar gráfico interactivo tipo donut
+# 4️⃣ Generar gráfico tipo donut con colores personalizados
 # ------------------------------
+color_map = {
+    "Bonds": "#bc8edc",
+    "Gold": "#e6c165",
+    "International stocks": "#69a0eb",
+    "Domestic stocks": "#d8914f",
+    "Remunerated account": "#7bbc8e",
+    "Emerging markets": "#e06666"
+}
+
 fig = px.pie(
     summary,
     names='Category',
     values='Amount',
-    title='Investment Allocation',
-    hole=0.4
+    hole=0.4,
+    color='Category',
+    color_discrete_map=color_map
 )
-fig.update_traces(textinfo="percent+label")
 
 # ------------------------------
-# 5️⃣ Guardar como HTML listo para Notion / GitHub Pages
+# 5️⃣ Porcentajes fuera con línea guía
+# ------------------------------
+fig.update_traces(
+    textinfo='percent',       # solo porcentaje
+    textposition='outside',   # fuera del gráfico
+    pull=[0]*len(summary),    # sin separación entre sectores
+    marker=dict(line=dict(color='#191919', width=1)),  # bordes de los sectores finos
+    showlegend=True
+)
+
+# ------------------------------
+# 6️⃣ Fondo oscuro y leyenda limpia
+# ------------------------------
+fig.update_layout(
+    paper_bgcolor="#191919",
+    plot_bgcolor="#191919",
+    font_color="white",
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.2,
+        xanchor="center",
+        x=0.5
+        # sin borde ni recuadro
+    )
+)
+
+# ------------------------------
+# 7️⃣ Guardar como HTML listo para Notion / GitHub Pages
 # ------------------------------
 fig.write_html("investment_chart.html", include_plotlyjs="cdn")
 
-print("✅ Gráfico generado en investment_chart.html")
+print("✅ Gráfico generado con porcentajes fuera, línea guía y leyenda limpia")
