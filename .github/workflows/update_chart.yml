@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Clonar el repo y mantener credenciales para push
     - uses: actions/checkout@v3
+      with:
+        persist-credentials: true
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -37,4 +40,4 @@ jobs:
         git config --global user.email "actions@github.com"
         git add investment_chart.html
         git commit -m "Auto-update chart" || echo "No changes to commit"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/acasan7/charts.git main
+        git push
