@@ -94,9 +94,33 @@ fig.update_layout(
     )
 )
 
+# 6️⃣ Gráfico secundario: pequeño, sin números ni leyenda
 # ------------------------------
-# 7️⃣ Guardar como HTML listo para Notion / GitHub Pages
-# ------------------------------
-fig.write_html("investment_chart.html", include_plotlyjs="cdn")
+fig_small = px.pie(
+    summary,
+    names='Category',
+    values='Amount',
+    hole=0.4,
+    color='Category',
+    color_discrete_map=color_map,
+    width=400,
+    height=400
+)
 
-print("✅ Gráfico generado con porcentajes fuera, línea guía y leyenda limpia")
+fig_small.update_traces(
+    textinfo='none',         # sin porcentajes
+    showlegend=False,    # sin leyenda
+    pull=[0]*len(summary),
+    marker=dict(line=dict(color='#191919', width=1))
+)
+
+fig_small.update_layout(
+    paper_bgcolor="#191919",
+    plot_bgcolor="#191919"
+)
+
+# ------------------------------
+fig.write_html("investment_chart.html", include_plotlyjs="cdn")  # gráfico grande
+fig_small.write_html("investment_chart_small.html", include_plotlyjs="cdn")  # gráfico pequeño
+
+print("✅ Gráficos generados: investment_chart.html y investment_chart_small.html")
