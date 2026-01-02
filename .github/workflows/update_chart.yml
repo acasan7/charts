@@ -2,42 +2,35 @@ name: Auto-update Investment Chart
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Cada hora
-  workflow_dispatch:  # Permite ejecutar manualmente
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Clonar el repo
     - uses: actions/checkout@v3
 
-    # 2️⃣ Configurar Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
 
-    # 3️⃣ Instalar dependencias (con numpy)
     - name: Install dependencies
       run: |
         pip install gspread pandas plotly oauth2client numpy
 
-    # 4️⃣ Configurar el Service Account desde Secret
     - name: Setup Google Service Account
       env:
         GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
-      run: |
-        echo "Service Account listo"
+      run: echo "Service Account listo"
 
-    # 5️⃣ Ejecutar el script de Python para generar el gráfico
     - name: Generate chart
       env:
         GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
       run: python generate_chart.py
 
-    # 6️⃣ Commit y push del HTML actualizado usando GITHUB_TOKEN
     - name: Commit & Push HTML
       run: |
         git config --global user.name "github-actions"
